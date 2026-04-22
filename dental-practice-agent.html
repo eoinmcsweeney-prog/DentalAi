@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Practice Efficiency Advisor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2342;
+    --teal: #0d8c7a;
+    --teal-light: #13b8a0;
+    --gold: #c9a84c;
+    --cream: #f9f6f0;
+    --white: #ffffff;
+    --gray: #6b7280;
+    --gray-light: #f3f4f6;
+    --red: #dc2626;
+    --amber: #d97706;
+    --green: #059669;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: var(--teal);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .logo-text h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+
+  .logo-text span {
+    color: var(--gold);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 12px rgba(15,35,66,0.07);
+  }
+
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--gray-light);
+    z-index: 0;
+  }
+
+  .step-item.done:not(:last-child)::after { background: var(--teal); }
+
+  .step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray);
+    z-index: 1;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .step-item.active .step-dot { background: var(--teal); color: white; }
+  .step-item.done .step-dot { background: var(--teal); color: white; }
+
+  .step-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--gray);
+    margin-top: 0.4rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .step-item.active .step-label { color: var(--teal); }
+
+  /* Cards */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(15,35,66,0.07);
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--gray-light);
+  }
+
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(13,140,122,0.1);
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--navy);
+  }
+
+  .card-subtitle { font-size: 0.82rem; color: var(--gray); margin-top: 0.15rem; }
+
+  /* Form elements */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .form-grid.single { grid-template-columns: 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .field label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+  }
+
+  .field input, .field select, .field textarea {
+    padding: 0.65rem 0.9rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--teal);
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .field .hint { font-size: 0.75rem; color: var(--gray); }
+
+  /* Radio / scale groups */
+  .scale-group { display: flex; gap: 0.5rem; }
+
+  .scale-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: var(--white);
+    color: var(--gray);
+  }
+
+  .scale-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .scale-btn.selected { background: var(--teal); border-color: var(--teal); color: white; }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--gray);
+    margin-top: 0.25rem;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--teal);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); }
+  .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: var(--gray-light);
+    color: var(--navy);
+  }
+
+  .btn-secondary:hover { background: #e5e7eb; }
+
+  .btn-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+
+  /* Intro screen */
+  .intro {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .intro .big-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+  }
+
+  .intro p {
+    color: var(--gray);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .intro-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .pill {
+    background: rgba(13,140,122,0.1);
+    color: var(--teal);
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1rem;
+  }
+
+  /* Loading */
+  .loading-wrap {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .spinner {
+    width: 50px; height: 50px;
+    border: 4px solid var(--gray-light);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-wrap h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Report styles */
+  .report-header {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 1.5rem;
+  }
+
+  .report-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .report-header .meta {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.82rem;
+  }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .score-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(15,35,66,0.06);
+    text-align: center;
+  }
+
+  .score-card .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-val {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .score-val.red { color: var(--red); }
+  .score-val.amber { color: var(--amber); }
+  .score-val.green { color: var(--green); }
+
+  .report-body {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(15,35,66,0.07);
+    line-height: 1.7;
+    font-size: 0.92rem;
+  }
+
+  .report-body h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--navy);
+    margin: 1.5rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--teal);
+    display: inline-block;
+  }
+
+  .report-body h3:first-child { margin-top: 0; }
+
+  .report-body p { margin-bottom: 0.75rem; }
+
+  .report-body ul, .report-body ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .report-body li { margin-bottom: 0.3rem; }
+
+  .report-body strong { color: var(--navy); }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-red { background: rgba(220,38,38,0.1); color: var(--red); }
+  .badge-amber { background: rgba(217,119,6,0.1); color: var(--amber); }
+  .badge-green { background: rgba(5,150,105,0.1); color: var(--green); }
+
+  .report-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+  }
+
+  .btn-outline:hover { background: rgba(13,140,122,0.08); }
+
+  .error-msg {
+    background: rgba(220,38,38,0.08);
+    border: 1px solid rgba(220,38,38,0.2);
+    color: var(--red);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">🦷</div>
+  <div class="logo-text">
+    <h1>Practice Efficiency Advisor</h1>
+    <span>Powered by dental management expertise</span>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-steps" id="progressSteps"></div>
+  </div>
+
+  <div id="app"></div>
+</div>
+
+<script>
+const STEPS = [
+  { id: 'intro', label: 'Welcome' },
+  { id: 'practice', label: 'Practice Info' },
+  { id: 'financial', label: 'Financials' },
+  { id: 'scheduling', label: 'Scheduling' },
+  { id: 'team', label: 'Team & HR' },
+  { id: 'patients', label: 'Patients' },
+  { id: 'report', label: 'Report' }
+];
+
+let currentStep = 0;
+let formData = {};
+
+function renderProgress() {
+  const el = document.getElementById('progressSteps');
+  el.innerHTML = STEPS.map((s, i) => `
+    <div class="step-item ${i < currentStep ? 'done' : ''} ${i === currentStep ? 'active' : ''}">
+      <div class="step-dot">${i < currentStep ? '✓' : i + 1}</div>
+      <div class="step-label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+function goNext() {
+  collectCurrentData();
+  currentStep++;
+  render();
+}
+
+function goBack() {
+  currentStep--;
+  render();
+}
+
+function collectCurrentData() {
+  const inputs = document.querySelectorAll('#app input, #app select, #app textarea');
+  inputs.forEach(el => { if (el.name) formData[el.name] = el.value; });
+  // Collect scale buttons
+  document.querySelectorAll('.scale-btn.selected').forEach(btn => {
+    formData[btn.dataset.name] = btn.dataset.val;
+  });
+}
+
+function attachScaleListeners() {
+  document.querySelectorAll('.scale-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.name;
+      document.querySelectorAll(`.scale-btn[data-name="${name}"]`).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      formData[name] = btn.dataset.val;
+    });
+    // Re-select if already in formData
+    if (formData[btn.dataset.name] === btn.dataset.val) {
+      btn.classList.add('selected');
+    }
+  });
+}
+
+function scaleField(label, name, low, high) {
+  return `
+    <div class="field">
+      <label>${label}</label>
+      <div class="scale-group">
+        ${[1,2,3,4,5].map(v => `<div class="scale-btn" data-name="${name}" data-val="${v}">${v}</div>`).join('')}
+      </div>
+      <div class="scale-labels"><span>${low}</span><span>${high}</span></div>
+    </div>
+  `;
+}
+
+function render() {
+  renderProgress();
+  const step = STEPS[currentStep].id;
+  const app = document.getElementById('app');
+
+  if (step === 'intro') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="intro">
+          <div class="big-icon">🦷</div>
+          <h2>Dental Practice Efficiency Report</h2>
+          <p>Answer a few questions about your practice and receive a personalised diagnostic report — identifying inefficiencies, benchmarking your performance, and recommending concrete improvements.</p>
+          <div class="intro-pills">
+            <span class="pill">📊 Financial Health</span>
+            <span class="pill">📅 Scheduling & Production</span>
+            <span class="pill">👥 Team Performance</span>
+            <span class="pill">🤝 Patient Retention</span>
+            <span class="pill">💡 Actionable Recommendations</span>
+          </div>
+          <p style="font-size:0.82rem;color:var(--gray)">Takes approximately 5 minutes. Your data is used only to generate your report.</p>
+          <div style="margin-top:1.5rem">
+            <button class="btn btn-primary" onclick="goNext()">Begin Assessment →</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  else if (step === 'practice') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🏢</div>
+          <div>
+            <div class="card-title">Practice Overview</div>
+            <div class="card-subtitle">Tell us about your practice structure</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Practice Name</label>
+            <input name="practice_name" placeholder="e.g. Smile Dental Care" value="${formData.practice_name||''}">
+          </div>
+          <div class="field">
+            <label>Years in Operation</label>
+            <select name="years_op">
+              <option value="">Select...</option>
+              ${['Less than 1 year','1–3 years','3–5 years','5–10 years','10–20 years','20+ years'].map(o => `<option ${formData.years_op===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Number of Dentists</label>
+            <select name="num_dentists">
+              <option value="">Select...</option>
+              ${['1','2','3','4','5+'].map(o => `<option ${formData.num_dentists===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Number of Hygienists</label>
+            <select name="num_hygienists">
+              <option value="">Select...</option>
+              ${['0','1','2','3','4+'].map(o => `<option ${formData.num_hygienists===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Number of Operatories (Chairs)</label>
+            <select name="num_chairs">
+              <option value="">Select...</option>
+              ${['1','2','3','4','5','6+'].map(o => `<option ${formData.num_chairs===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Practice Type</label>
+            <select name="practice_type">
+              <option value="">Select...</option>
+              ${['Solo General Practice','Group General Practice','Specialist Practice','Multi-Specialty','Startup (under 2 years)'].map(o => `<option ${formData.practice_type===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Practice Management Software</label>
+            <input name="pms" placeholder="e.g. Dentrix, Eaglesoft, Open Dental" value="${formData.pms||''}">
+          </div>
+          <div class="field">
+            <label>Days Open Per Week</label>
+            <select name="days_open">
+              <option value="">Select...</option>
+              ${['3 days','4 days','5 days','6 days','7 days'].map(o => `<option ${formData.days_open===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+          <button class="btn btn-primary" onclick="goNext()">Next →</button>
+        </div>
+      </div>`;
+  }
+
+  else if (step === 'financial') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">💰</div>
+          <div>
+            <div class="card-title">Financial Performance</div>
+            <div class="card-subtitle">Production, collections and overhead metrics</div>
+          </div>
+        </div>
+        <div class="section-label">Production & Revenue</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Average Monthly Production ($)</label>
+            <input name="monthly_production" type="number" placeholder="e.g. 80000" value="${formData.monthly_production||''}">
+            <span class="hint">Total treatment fees before adjustments</span>
+          </div>
+          <div class="field">
+            <label>Collections Rate (%)</label>
+            <input name="collections_rate" type="number" placeholder="e.g. 95" value="${formData.collections_rate||''}">
+            <span class="hint">Industry benchmark: 98%+</span>
+          </div>
+          <div class="field">
+            <label>Overhead Percentage (%)</label>
+            <input name="overhead_pct" type="number" placeholder="e.g. 65" value="${formData.overhead_pct||''}">
+            <span class="hint">Industry benchmark: under 65%</span>
+          </div>
+          <div class="field">
+            <label>Staff Payroll as % of Collections</label>
+            <input name="staff_payroll_pct" type="number" placeholder="e.g. 28" value="${formData.staff_payroll_pct||''}">
+            <span class="hint">Industry benchmark: 25–30%</span>
+          </div>
+        </div>
+        <div class="section-label" style="margin-top:1.5rem">Billing & Insurance</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Do you accept insurance?</label>
+            <select name="accepts_insurance">
+              <option value="">Select...</option>
+              ${['Yes – mostly insurance','Yes – mix of insurance and fee-for-service','No – fee-for-service only','No – membership plan only'].map(o => `<option ${formData.accepts_insurance===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Average Accounts Receivable (A/R) Days</label>
+            <input name="ar_days" type="number" placeholder="e.g. 30" value="${formData.ar_days||''}">
+            <span class="hint">Industry benchmark: under 30 days</span>
+          </div>
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+          <button class="btn btn-primary" onclick="goNext()">Next →</button>
+        </div>
+      </div>`;
+  }
+
+  else if (step === 'scheduling') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📅</div>
+          <div>
+            <div class="card-title">Scheduling & Production</div>
+            <div class="card-subtitle">Chair utilisation and appointment management</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Average Patients Per Day</label>
+            <input name="patients_per_day" type="number" placeholder="e.g. 25" value="${formData.patients_per_day||''}">
+          </div>
+          <div class="field">
+            <label>No-Show / Cancellation Rate (%)</label>
+            <input name="noshow_rate" type="number" placeholder="e.g. 8" value="${formData.noshow_rate||''}">
+            <span class="hint">Industry benchmark: under 5%</span>
+          </div>
+          <div class="field">
+            <label>Average Schedule Fill Rate (%)</label>
+            <input name="schedule_fill" type="number" placeholder="e.g. 85" value="${formData.schedule_fill||''}">
+            <span class="hint">Industry benchmark: 85–95%</span>
+          </div>
+          <div class="field">
+            <label>Do you have a morning huddle?</label>
+            <select name="morning_huddle">
+              <option value="">Select...</option>
+              ${['Yes – daily','Yes – occasionally','No'].map(o => `<option ${formData.morning_huddle===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Hygiene Re-Appointment Rate (%)</label>
+            <input name="reappt_rate" type="number" placeholder="e.g. 85" value="${formData.reappt_rate||''}">
+            <span class="hint">Industry benchmark: 85%+</span>
+          </div>
+          <div class="field">
+            <label>Treatment Acceptance Rate (%)</label>
+            <input name="tx_acceptance" type="number" placeholder="e.g. 65" value="${formData.tx_acceptance||''}">
+            <span class="hint">Industry benchmark: 75%+</span>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem">
+          ${scaleField('How would you rate your scheduling efficiency overall?', 'scheduling_score', 'Very poor', 'Excellent')}
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+          <button class="btn btn-primary" onclick="goNext()">Next →</button>
+        </div>
+      </div>`;
+    attachScaleListeners();
+  }
+
+  else if (step === 'team') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">👥</div>
+          <div>
+            <div class="card-title">Team & Human Resources</div>
+            <div class="card-subtitle">Staffing, culture and performance management</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Total Number of Staff</label>
+            <input name="total_staff" type="number" placeholder="e.g. 8" value="${formData.total_staff||''}">
+          </div>
+          <div class="field">
+            <label>Annual Staff Turnover Rate (%)</label>
+            <input name="turnover_rate" type="number" placeholder="e.g. 20" value="${formData.turnover_rate||''}">
+            <span class="hint">Industry benchmark: under 20%</span>
+          </div>
+          <div class="field">
+            <label>Do you conduct regular performance reviews?</label>
+            <select name="perf_reviews">
+              <option value="">Select...</option>
+              ${['Yes – quarterly','Yes – annually','Occasionally','Never'].map(o => `<option ${formData.perf_reviews===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Do you have a written HR policies handbook?</label>
+            <select name="hr_handbook">
+              <option value="">Select...</option>
+              ${['Yes – up to date','Yes – needs updating','No'].map(o => `<option ${formData.hr_handbook===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Staff Training & Professional Development Budget</label>
+            <select name="training_budget">
+              <option value="">Select...</option>
+              ${['No dedicated budget','Under $1,000/year','$1,000–$5,000/year','$5,000–$10,000/year','$10,000+/year'].map(o => `<option ${formData.training_budget===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Do you have an employee recognition program?</label>
+            <select name="recognition">
+              <option value="">Select...</option>
+              ${['Yes – formal program','Informal recognition only','No'].map(o => `<option ${formData.recognition===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+          ${scaleField('Overall team morale and engagement', 'team_morale', 'Very low', 'Excellent')}
+          ${scaleField('Quality of internal communication', 'team_comms', 'Very poor', 'Excellent')}
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+          <button class="btn btn-primary" onclick="goNext()">Next →</button>
+        </div>
+      </div>`;
+    attachScaleListeners();
+  }
+
+  else if (step === 'patients') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🤝</div>
+          <div>
+            <div class="card-title">Patient Experience & Retention</div>
+            <div class="card-subtitle">Acquisition, recall and satisfaction</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Active Patient Count</label>
+            <input name="active_patients" type="number" placeholder="e.g. 1200" value="${formData.active_patients||''}">
+            <span class="hint">Patients seen in last 18 months</span>
+          </div>
+          <div class="field">
+            <label>New Patients Per Month</label>
+            <input name="new_patients_mo" type="number" placeholder="e.g. 25" value="${formData.new_patients_mo||''}">
+          </div>
+          <div class="field">
+            <label>Do you have a patient recall/reactivation system?</label>
+            <select name="recall_system">
+              <option value="">Select...</option>
+              ${['Yes – automated system','Yes – manual process','No formal system'].map(o => `<option ${formData.recall_system===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Primary Source of New Patients</label>
+            <select name="new_patient_source">
+              <option value="">Select...</option>
+              ${['Word of mouth / referrals','Online search / Google','Social media','Insurance directory','Walk-ins','Other'].map(o => `<option ${formData.new_patient_source===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Do you collect patient feedback / reviews?</label>
+            <select name="collects_feedback">
+              <option value="">Select...</option>
+              ${['Yes – systematically','Occasionally','No'].map(o => `<option ${formData.collects_feedback===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Do you have a complaint handling process?</label>
+            <select name="complaint_process">
+              <option value="">Select...</option>
+              ${['Yes – written process','Informal process','No formal process'].map(o => `<option ${formData.complaint_process===o?'selected':''} value="${o}">${o}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+          ${scaleField('Overall patient satisfaction level', 'patient_satisfaction', 'Very low', 'Excellent')}
+          ${scaleField('Quality of your patient communication (reminders, follow-ups)', 'patient_comms', 'Very poor', 'Excellent')}
+        </div>
+        <div class="field" style="margin-top:1rem">
+          <label>Any specific challenges or concerns you'd like addressed in the report?</label>
+          <textarea name="specific_concerns" placeholder="e.g. high no-show rate, struggling with case acceptance, staff morale issues...">${formData.specific_concerns||''}</textarea>
+        </div>
+        <div class="btn-actions">
+          <button class="btn btn-secondary" onclick="goBack()">← Back</button>
+          <button class="btn btn-primary" id="generateBtn" onclick="generateReport()">Generate Report →</button>
+        </div>
+        <div id="errorMsg"></div>
+      </div>`;
+    attachScaleListeners();
+  }
+
+  else if (step === 'report') {
+    // Rendered by generateReport()
+  }
+}
+
+async function generateReport() {
+  collectCurrentData();
+
+  // Show loading
+  currentStep = STEPS.findIndex(s => s.id === 'report');
+  renderProgress();
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <h3>Analysing your practice data…</h3>
+        <p style="color:var(--gray);font-size:0.88rem">Our dental management expert is reviewing your responses against industry benchmarks and best practices.</p>
+      </div>
+    </div>`;
+
+  const systemPrompt = `You are an expert dental practice management consultant with deep knowledge drawn from leading dental practice management literature, including:
+- The Dental CFO's practice management frameworks (performance reviews, KPIs, financial benchmarks, HR best practices)
+- "Managing a Dental Practice – The Genghis Khan Way" (operational efficiency, patient management, marketing, quality systems)
+- Dental practice startup and growth principles
+- Team building, hiring, retention and motivation strategies for dental practices
+
+Your role is to analyse survey data from a dental practice and produce a comprehensive, actionable efficiency report.
+
+KEY INDUSTRY BENCHMARKS TO REFERENCE:
+- Collections rate: 98%+ (benchmark)
+- Overhead: under 65% of collections
+- Staff payroll: 25–30% of collections
+- A/R days: under 30 days
+- No-show/cancellation rate: under 5%
+- Schedule fill rate: 85–95%
+- Hygiene re-appointment rate: 85%+
+- Treatment acceptance rate: 75%+
+- Staff turnover: under 20% annually
+- Performance reviews: quarterly is optimal (per Dental CFO research)
+
+REPORT FORMAT:
+Produce a structured report with these exact sections using markdown headers:
+
+### Executive Summary
+2-3 paragraph overview of the practice's efficiency status, highlighting top strengths and critical issues.
+
+### Overall Practice Health Score
+Give an overall score out of 10 with a brief justification. Format: "Overall Score: X/10 – [category: Critical/Needs Attention/Good/Excellent]"
+
+### Key Performance Scores
+Score each of these areas out of 10 with one sentence explanation:
+- Financial Health: X/10
+- Scheduling & Production: X/10
+- Team & HR: X/10
+- Patient Experience: X/10
+
+### Critical Issues (Immediate Action Required)
+List 2-4 most urgent problems with specific benchmarks being missed. Be specific and data-driven.
+
+### Areas for Improvement
+List 3-5 important but less urgent areas to address.
+
+### Strengths to Build On
+List 2-3 things the practice is doing well.
+
+### Prioritised Recommendations
+Number 5-8 specific, actionable recommendations in priority order. Each should include:
+- What to do
+- Why it matters (reference to benchmark or best practice)
+- How to implement (brief practical steps)
+
+### Benchmarking Summary
+A table-style comparison of their key metrics vs industry benchmarks.
+
+Keep the tone professional, encouraging, and practical. Be specific — avoid vague advice. Ground recommendations in dental practice management best practices.`;
+
+  const userMessage = `Please analyse this dental practice survey data and generate a comprehensive efficiency report:
+
+${JSON.stringify(formData, null, 2)}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMessage }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.content) {
+      throw new Error(data.error?.message || 'API error');
+    }
+
+    const reportText = data.content.map(b => b.text || '').join('');
+    renderReport(reportText);
+
+  } catch (err) {
+    document.getElementById('app').innerHTML = `
+      <div class="card">
+        <div style="text-align:center;padding:2rem">
+          <p style="font-size:2rem;margin-bottom:1rem">⚠️</p>
+          <h3 style="margin-bottom:0.5rem">Report generation failed</h3>
+          <p style="color:var(--gray);margin-bottom:1.5rem">${err.message}</p>
+          <button class="btn btn-primary" onclick="currentStep=5;render()">← Try Again</button>
+        </div>
+      </div>`;
+  }
+}
+
+function markdownToHtml(md) {
+  return md
+    .replace(/### (.+)/g, '<h3>$1</h3>')
+    .replace(/## (.+)/g, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\d+\. (.+)/gm, '<li>$1</li>')
+    .replace(/^- (.+)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[h|u|o|l])/gm, '')
+    .split('\n').map(line => line.trim() ? (line.startsWith('<') ? line : `<p>${line}</p>`) : '').join('');
+}
+
+function extractScore(text, label) {
+  const m = text.match(new RegExp(label + '[:\\s]+([0-9.]+)\\/10'));
+  return m ? parseFloat(m[1]) : null;
+}
+
+function scoreColor(s) {
+  if (!s) return '';
+  if (s >= 8) return 'green';
+  if (s >= 5) return 'amber';
+  return 'red';
+}
+
+function renderReport(text) {
+  const overall = extractScore(text, 'Overall Score');
+  const financial = extractScore(text, 'Financial Health');
+  const scheduling = extractScore(text, 'Scheduling & Production');
+  const team = extractScore(text, 'Team & HR');
+  const patients = extractScore(text, 'Patient Experience');
+
+  const practiceName = formData.practice_name || 'Your Practice';
+  const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+  document.getElementById('app').innerHTML = `
+    <div class="report-header">
+      <h2>Practice Efficiency Report</h2>
+      <div class="meta">${practiceName} &nbsp;·&nbsp; Generated ${today}</div>
+    </div>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="label">Overall Score</div>
+        <div class="score-val ${scoreColor(overall)}">${overall ? overall+'/10' : '—'}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Financial Health</div>
+        <div class="score-val ${scoreColor(financial)}">${financial ? financial+'/10' : '—'}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Scheduling</div>
+        <div class="score-val ${scoreColor(scheduling)}">${scheduling ? scheduling+'/10' : '—'}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Team & HR</div>
+        <div class="score-val ${scoreColor(team)}">${team ? team+'/10' : '—'}</div>
+      </div>
+      <div class="score-card">
+        <div class="label">Patient Experience</div>
+        <div class="score-val ${scoreColor(patients)}">${patients ? patients+'/10' : '—'}</div>
+      </div>
+      <div class="score-card" style="cursor:pointer" onclick="window.print()">
+        <div class="label">Actions</div>
+        <div style="font-size:1.5rem;margin-top:0.25rem">🖨️</div>
+        <div style="font-size:0.72rem;color:var(--gray);margin-top:0.25rem">Print / Save PDF</div>
+      </div>
+    </div>
+
+    <div class="report-body">${markdownToHtml(text)}</div>
+
+    <div class="report-actions">
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="btn btn-outline btn-secondary" onclick="currentStep=1;render()">Start New Assessment</button>
+    </div>`;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
