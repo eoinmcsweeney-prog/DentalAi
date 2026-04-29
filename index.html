@@ -963,28 +963,32 @@ Keep the tone professional, encouraging, and practical. Be specific — avoid va
 ${JSON.stringify(formData, null, 2)}`;
 
   try {
-    const response = await fetch("/.netlify/functions/claude", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMessage }]
-      })
-    });
+   const response = await fetch("/.netlify/functions/claude", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }]
+  })
+});
 
-    const data = await response.json();
+const rawText = await response.text();
+let data;
+try {
+  data = JSON.parse(rawText);
+} catch(e) {
+  throw new Error('Invalid response: ' + rawText.substring(0, 200));
+}
 
-    // Check for error object returned from our function
-    if (data.error) {
-      throw new Error(data.message || 'API error');
-    }
+if (data.error) {
+  throw new Error(data.message || data.type || JSON.stringify(data));
+}
 
-    if (!response.ok || !data.content) {
-      throw new Error(JSON.stringify(data) || 'API error');
-    }
+if (!data.content) {
+  throw new Error('Unexpected response: ' + JSON.stringify(data).substring(0, 200));
+}
 
-    const reportText = data.content.map(b => b.text || '').join('');
-    renderReport(reportText);
+const reportText = data.content.map(b => b.text || '').join('');
 
   } catch (err) {
     document.getElementById('app').innerHTML = `
