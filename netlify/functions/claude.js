@@ -21,31 +21,18 @@ exports.handler = async function (event) {
       })
     });
 
-    const data = await response.json();
-
-    // If Anthropic returned an error, pass it through clearly
-    if (data.error) {
-      return {
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          error: true,
-          message: data.error.message,
-          type: data.error.type
-        })
-      };
-    }
+    const rawText = await response.text();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ debug: rawText })
     };
 
   } catch (err) {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      statusCode: 200,
+      body: JSON.stringify({ debug: "ERROR: " + err.message })
     };
   }
 };
