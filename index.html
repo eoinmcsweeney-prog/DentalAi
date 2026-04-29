@@ -989,6 +989,7 @@ if (!data.content) {
 }
 
 const reportText = data.content.map(b => b.text || '').join('');
+    renderReport(reportText);
 
   } catch (err) {
     document.getElementById('app').innerHTML = `
