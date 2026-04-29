@@ -2,10 +2,8 @@ exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
-
   try {
     const body = JSON.parse(event.body);
-
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -14,25 +12,22 @@ exports.handler = async function (event) {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-3-haiku-20240307",
+        model: "claude-3-5-sonnet-20241022",
         max_tokens: 2000,
         system: body.system,
         messages: body.messages
       })
     });
-
-    const rawText = await response.text();
-
+    const data = await response.json();
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ debug: rawText })
+      body: JSON.stringify(data)
     };
-
   } catch (err) {
     return {
-      statusCode: 200,
-      body: JSON.stringify({ debug: "ERROR: " + err.message })
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
     };
   }
 };
