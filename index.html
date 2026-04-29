@@ -974,8 +974,13 @@ ${JSON.stringify(formData, null, 2)}`;
 
     const data = await response.json();
 
+    // Check for error object returned from our function
+    if (data.error) {
+      throw new Error(data.message || 'API error');
+    }
+
     if (!response.ok || !data.content) {
-      throw new Error(data.error?.message || 'API error');
+      throw new Error(JSON.stringify(data) || 'API error');
     }
 
     const reportText = data.content.map(b => b.text || '').join('');
