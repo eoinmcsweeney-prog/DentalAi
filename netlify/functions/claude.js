@@ -14,7 +14,7 @@ exports.handler = async function (event) {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
         system: body.system,
         messages: body.messages
@@ -22,6 +22,19 @@ exports.handler = async function (event) {
     });
 
     const data = await response.json();
+
+    // If Anthropic returned an error, pass it through clearly
+    if (data.error) {
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          error: true,
+          message: data.error.message,
+          type: data.error.type
+        })
+      };
+    }
 
     return {
       statusCode: 200,
