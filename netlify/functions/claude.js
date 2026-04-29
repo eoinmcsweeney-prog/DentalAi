@@ -18,16 +18,17 @@ exports.handler = async function (event) {
         messages: body.messages
       })
     });
-    const data = await response.json();
+    const text = await response.text();
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: text
     };
   } catch (err) {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: { message: err.message } })
     };
   }
 };
